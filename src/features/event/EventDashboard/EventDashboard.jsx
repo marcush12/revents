@@ -2,6 +2,7 @@ import React, { Component } from "react";
 import { Grid, Button } from "semantic-ui-react";
 import EventList from "../EventList/EventList";
 import EventForm from "../EventForm/EventForm";
+import cuid from "cuid";
 
 const eventsFromDashboard = [
   {
@@ -61,15 +62,28 @@ class EventDashboard extends Component {
   };
 
   handleIsOpenToggle = () => {
-    this.setState(({isOpen}) => ({
+    this.setState(({ isOpen }) => ({
       isOpen: !isOpen
-    }))
+    }));
 
     /* this.setState((prevState) => ({
       isOpen: !prevState.isOpen
     })) */
     // destructuring {isOpen} = prevState
-  }
+  };
+
+  handleCreateEvent = newEvent => {
+    newEvent.id = cuid();
+    newEvent.hostPhotoURL = "/assets/user.png";
+    this.setState(({ events }) => ({
+      //{events} is previous state
+      events: [...events, newEvent],
+      isOpen: false
+    }));
+    /* this.setState({
+      events: [...this.state.events, newEvent]
+    }) */
+  };
 
   render() {
     // para acessar uma propriedade dentro da classe usamos this
@@ -82,9 +96,18 @@ class EventDashboard extends Component {
           <EventList events={events} />
         </Grid.Column>
         <Grid.Column width={6}>
-          <Button onClick={this.handleIsOpenToggle} positive content='Criar Evento' />
+          <Button
+            onClick={this.handleIsOpenToggle}
+            positive
+            content='Criar Evento'
+          />
           {/* if isOpen is true segue o q está após &&; caso contrário isso ñ ocorre */}
-          {isOpen && <EventForm cancelFormOpen = {this.handleIsOpenToggle} />}
+          {isOpen && (
+            <EventForm
+              createEvent={this.handleCreateEvent}
+              cancelFormOpen={this.handleIsOpenToggle}
+            />
+          )}
         </Grid.Column>
       </Grid>
     );
