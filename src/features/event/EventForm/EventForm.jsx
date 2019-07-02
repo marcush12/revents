@@ -1,13 +1,30 @@
 import React, { Component } from "react";
+import {connect} from 'react-redux';
 import { Segment, Form, Button } from "semantic-ui-react";
 
-class EventForm extends Component {
-  state = {
+const mapState = (state, ownProps) => {
+  const eventId = ownProps.match.params.id;
+
+  let event = {
     title: "",
     date: "",
     city: "",
     venue: "",
     hostedBy: ""
+  }
+
+  if (eventId && state.events.length > 0) {
+    event = state.events.filter(event => event.id === eventId)[0]
+  }
+
+  return {
+    event
+  }
+}
+
+class EventForm extends Component {
+  state = {
+    event: Object.assign({}, this.props.event)
   };
 
   componentDidMount() {
@@ -44,7 +61,7 @@ class EventForm extends Component {
 
   render() {
     // {this.props.cancelFormOpen}
-    const { cancelFormOpen } = this.props;
+  
     // destructuring
     const { title, date, city, venue, hostedBy } = this.state;
     return (
@@ -100,7 +117,7 @@ class EventForm extends Component {
             <Button positive type='submit'>
               Enviar
             </Button>
-            <Button onClick={cancelFormOpen} type='button'>
+            <Button onClick={this.props.history.goBack} type='button'>
               Cancelar
             </Button>
           </Form>
@@ -110,4 +127,4 @@ class EventForm extends Component {
   }
 }
 
-export default EventForm;
+export default connect(mapState) (EventForm);
